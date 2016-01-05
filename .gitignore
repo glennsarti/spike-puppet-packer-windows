@@ -1,0 +1,5 @@
+iso/**
+zip/**
+
+# Packer temp files
+packer_cache/**
