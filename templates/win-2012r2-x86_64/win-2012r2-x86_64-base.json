@@ -30,11 +30,7 @@
       "floppy_files": [
         "{{user `this_templatedir`}}/autounattend.xml",
         
-        "drivers/vmxnet3n61x64.sys",
-        "drivers/vmxnet3n61x86.sys",
-        "drivers/vmxnet3ndis6.cat",
-        "drivers/vmxnet3ndis6.inf",
-        "drivers/vmxnet3ndis6ver.dll",
+        "drivers/*",
 
         "scripts/microsoft-updates.bat",
         "scripts/win-updates.ps1",

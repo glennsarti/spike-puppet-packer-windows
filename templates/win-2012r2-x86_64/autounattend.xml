@@ -309,6 +309,14 @@
         <component name="Microsoft-Windows-LUA-Settings" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
             <EnableLUA>false</EnableLUA>
         </component>
+        <!-- Added for driver injection. Typically for NICs and Mass Storage -->
+        <component name="Microsoft-Windows-PnpCustomizationsNonWinPE" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+            <DriverPaths>
+                <PathAndCredentials wcm:action="add" wcm:keyValue="0">
+                    <Path>A:\</Path>
+                </PathAndCredentials>
+            </DriverPaths>
+        </component>
     </settings>
     <cpi:offlineImage cpi:source="catalog:c:/dev/iso/en_windows_server_2012_r2_x64_dvd_2707946-install_windows server 2012 r2 serverstandard.clg" xmlns:cpi="urn:schemas-microsoft-com:cpi" />
 </unattend>
