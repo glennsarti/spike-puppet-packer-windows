@@ -4,7 +4,8 @@
     "iso_checksum_type": "md5",
     "iso_checksum": "0e7c09aab20dec3cd7eab236dab90e78",
     
-    "this_templatedir": "templates/win-2012r2-x86_64"
+    "this_templatedir": "templates/win-2012r2-x86_64",
+    "this_template": "win-2012r2-x86_64-base"
   },
 
   "description": "Builds a Windows Server 2012 R2 template VM for use in VMware",
@@ -14,7 +15,7 @@
   ],
   "builders": [
     {
-      "name": "win-2012r2-x86_64-base",
+      "name": "{{user `this_template`}}",
       "type": "vmware-iso",
       "iso_url": "{{user `iso_url`}}",
       "iso_checksum_type": "{{user `iso_checksum_type`}}",
@@ -32,13 +33,12 @@
         
         "drivers/*",
 
-        "scripts/microsoft-updates.bat",
-        "scripts/win-updates.ps1",
-        "scripts/openssh.ps1",
-        "scripts/oracle-cert.cer"
+        "scripts/bootstrap-base.bat",
+        "scripts/start-boxstarter.ps1",
+        "{{user `this_templatedir`}}/{{user `this_template`}}.package.ps1"
       ],
       
-      "boot_command": [ "<enter><wait1><enter><wait1><enter><wait1><enter><wait1><enter><wait1><enter><wait1>"],
+      "boot_command": [ "<enter><wait1><enter><wait1><enter><wait1><enter><wait1><enter><wait1><enter><wait1><enter><wait1><enter><wait1><enter><wait1>"],
       "boot_wait": "1s",
       
       "vmx_data": {
@@ -49,8 +49,6 @@
         "numvcpus": "2",
         "ethernet0.virtualdev" : "vmxnet3",
         "scsi0.virtualdev": "lsisas1068",
-        "scsi1.virtualdev": "lsisas1068",
-        "scsi2.virtualdev": "lsisas1068",
         "virtualHW.version": "10",
 
         "vcpu.hotadd": "TRUE",
@@ -65,21 +63,6 @@
         "time.synchronize.tools.enable": "1",
         "time.synchronize.resume.host": "1"        
       }
-    }
-  ],
-  "provisioners": [
-    {
-      "type": "shell",
-      "remote_path": "/tmp/script.bat",
-      "execute_command": "{{.Vars}} cmd /c C:/Windows/Temp/script.bat",
-      "scripts": [
-        "scripts/vm-guest-tools.bat",
-        "scripts/vagrant-ssh.bat",
-        "scripts/enable-rdp.bat",
-        "scripts/compile-dotnet-assemblies.bat",
-        "scripts/disable-auto-logon.bat",
-        "scripts/compact.bat"
-      ]
     }
   ],
   "post-processors": [
