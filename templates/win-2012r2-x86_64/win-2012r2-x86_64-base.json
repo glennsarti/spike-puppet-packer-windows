@@ -29,13 +29,20 @@
       "disk_size": 61440,
       "floppy_files": [
         "{{user `this_templatedir`}}/autounattend.xml",
+        
+        "drivers/vmxnet3n61x64.sys",
+        "drivers/vmxnet3n61x86.sys",
+        "drivers/vmxnet3ndis6.cat",
+        "drivers/vmxnet3ndis6.inf",
+        "drivers/vmxnet3ndis6ver.dll",
+
         "scripts/microsoft-updates.bat",
         "scripts/win-updates.ps1",
         "scripts/openssh.ps1",
         "scripts/oracle-cert.cer"
       ],
       
-      "boot_command": [ "<enter><wait1><enter><wait1><enter><wait1>"],
+      "boot_command": [ "<enter><wait1><enter><wait1><enter><wait1><enter><wait1><enter><wait1><enter><wait1>"],
       "boot_wait": "1s",
       
       "vmx_data": {
@@ -45,6 +52,9 @@
         "memsize": "4096",
         "numvcpus": "2",
         "ethernet0.virtualdev" : "vmxnet3",
+        "scsi0.virtualdev": "lsisas1068",
+        "scsi1.virtualdev": "lsisas1068",
+        "scsi2.virtualdev": "lsisas1068",
         "virtualHW.version": "10",
 
         "vcpu.hotadd": "TRUE",

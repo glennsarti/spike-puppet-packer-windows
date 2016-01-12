@@ -1,5 +1,7 @@
 iso/**
 zip/**
+drivers/**
 
 # Packer temp files
 packer_cache/**
+output-*/**
