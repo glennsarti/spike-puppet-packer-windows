@@ -22,10 +22,12 @@
       "iso_checksum": "{{user `iso_checksum`}}",
       "headless": false,
 
-      "ssh_username": "vagrant",
-      "ssh_password": "vagrant",
-      "ssh_wait_timeout": "6h",
-      "shutdown_command": "shutdown /s /t 10 /f /d p:4:1 /c \"Packer Shutdown\"",
+      "communicator": "winrm",
+      "winrm_username": "vagrant",
+      "winrm_password": "vagrant",
+      "winrm_timeout": "8h",
+      
+      "shutdown_command": "A:\\shutdown-packer.bat",
       "guest_os_type": "windows8srv-64",
       "disk_size": 61440,
       "floppy_files": [
@@ -35,6 +37,8 @@
 
         "scripts/bootstrap-base.bat",
         "scripts/start-boxstarter.ps1",
+        "scripts/SetupComplete.cmd",
+        "scripts/shutdown-packer.bat",
         "{{user `this_templatedir`}}/{{user `this_template`}}.package.ps1"
       ],
       
