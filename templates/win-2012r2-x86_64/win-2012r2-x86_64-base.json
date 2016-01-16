@@ -42,7 +42,7 @@
         "{{user `this_templatedir`}}/{{user `this_template`}}.package.ps1"
       ],
       
-      "boot_command": [ "<enter><wait1><enter><wait1><enter><wait1><enter><wait1><enter><wait1><enter><wait1><enter><wait1><enter><wait1><enter><wait1>"],
+      "boot_command": [ "<enter><wait><enter><wait><enter><wait><enter><wait><enter><wait><enter><wait><enter><wait><enter><wait><enter><wait>"],
       "boot_wait": "1s",
       
       "vmx_data": {
@@ -67,13 +67,6 @@
         "time.synchronize.tools.enable": "1",
         "time.synchronize.resume.host": "1"        
       }
-    }
-  ],
-  "post-processors": [
-    {
-      "type": "compress",
-      "keep_input_artifact": true,
-      "output": "zip/win-2012r2-x86_64-base.zip"
     }
   ]
 }

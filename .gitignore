@@ -2,6 +2,9 @@ iso/**
 zip/**
 drivers/**
 
+# Debuging
+*.log
+
 # Packer temp files
 packer_cache/**
 output-*/**
