@@ -3,6 +3,7 @@
     "iso_url": "iso/en_windows_server_2012_r2_x64_dvd_2707946.iso",
     "iso_checksum_type": "md5",
     "iso_checksum": "0e7c09aab20dec3cd7eab236dab90e78",
+    "headless": "false",
     
     "this_templatedir": "templates/win-2012r2-x86_64",
     "this_template": "win-2012r2-x86_64-base"
@@ -20,12 +21,12 @@
       "iso_url": "{{user `iso_url`}}",
       "iso_checksum_type": "{{user `iso_checksum_type`}}",
       "iso_checksum": "{{user `iso_checksum`}}",
-      "headless": false,
+      "headless": "{{user `headless`}}",
 
       "communicator": "winrm",
       "winrm_username": "vagrant",
       "winrm_password": "vagrant",
-      "winrm_timeout": "8h",
+      "winrm_timeout": "4h",
       
       "shutdown_command": "A:\\shutdown-packer.bat",
       "guest_os_type": "windows8srv-64",
@@ -67,6 +68,13 @@
         "time.synchronize.tools.enable": "1",
         "time.synchronize.resume.host": "1"        
       }
+    }
+  ],
+  "post-processors": [
+    {
+        "type": "compress",
+        "keep_input_artifact": true,
+        "output": "zip/{{user `this_template`}}.zip"
     }
   ]
 }

@@ -1,7 +1,16 @@
-REM shutdown /s /t 60 /f /d p:4:1 /c "Packer Shutdown"
+@ECHO OFF
+SETLOCAL
 
-powershell "& { Start-Sleep -Seconds 5; Stop-Service Winrm -ErrorAction SilentlyContinue; (& netsh advfirewall firewall set rule name=WinRM-HTTP new action=block) }"
+SET LOGFILE=%SYSTEMROOT%\TEMP\shutdown-packer.bat.log
 
-REM netsh advfirewall firewall set rule name="WinRM-HTTP" new action=block
+ECHO shutdown-packer.bat started %date% %time% >> %LOGFILE%
 
-EXIT /B 0
+REM Service needs to be disabled, not stopped as it halts
+REM Packer if WinRM is suddenly stopped from underneath it
+ECHO Disabling the WinRM via service...  >> %LOGFILE%
+sc config winrm start= disabled >> %LOGFILE%
+
+ECHO Initiating shutdown...  >> %LOGFILE%
+shutdown /s /t 10 /f /d p:4:1 /c "Packer Shutdown"  >> %LOGFILE%
+
+EXIT /B %ERRRORLEVEL%

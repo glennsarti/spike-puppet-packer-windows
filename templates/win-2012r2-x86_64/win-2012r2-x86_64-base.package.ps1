@@ -13,15 +13,15 @@ netsh advfirewall firewall add rule name="Remote Desktop" dir=in localport=3389 
 # Install .Net Framework 4.5.2
 
 # Install Updates
-#Install-WindowsUpdate -AcceptEula
-if(Test-PendingReboot){ Invoke-Reboot }
+Install-WindowsUpdate -AcceptEula
+if (Test-PendingReboot) { Invoke-Reboot }
 
-#Remove the pagefile
+# Remove the pagefile
 Write-BoxstarterMessage "Removing page file.  Recreates on next boot"
 $pageFileMemoryKey = "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management"
 Set-ItemProperty -Path $pageFileMemoryKey -Name PagingFiles -Value ""
 
-# Enable WinRM
+# Add WinRM Firewall Rule
 Write-BoxstarterMessage "Setting up winrm"
 netsh advfirewall firewall add rule name="WinRM-HTTP" dir=in localport=5985 protocol=TCP action=allow
 
@@ -37,7 +37,8 @@ catch {
 }
 Enable-PSRemoting @enableArgs
 Enable-WSManCredSSP -Force -Role Server
+# NOTE - This is insecure but can be shored up in later customisation.  Required for Vagrant and other provisioning tools
 winrm set winrm/config/client/auth '@{Basic="true"}'
 winrm set winrm/config/service/auth '@{Basic="true"}'
 winrm set winrm/config/service '@{AllowUnencrypted="true"}'
-Write-BoxstarterMessage "winrm setup complete"
+Write-BoxstarterMessage "WinRM setup complete"
