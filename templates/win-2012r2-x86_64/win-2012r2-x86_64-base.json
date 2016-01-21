@@ -26,7 +26,7 @@
       "communicator": "winrm",
       "winrm_username": "vagrant",
       "winrm_password": "vagrant",
-      "winrm_timeout": "4h",
+      "winrm_timeout": "8h",
       
       "shutdown_command": "A:\\shutdown-packer.bat",
       "guest_os_type": "windows8srv-64",
