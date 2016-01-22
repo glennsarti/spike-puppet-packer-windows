@@ -1,5 +1,10 @@
 $ErrorActionPreference = "Stop"
 
+# Boxstarter options
+$Boxstarter.RebootOk=$true # Allow reboots?
+$Boxstarter.NoPassword=$false # Is this a machine with no login password?
+$Boxstarter.AutoLogin=$true # Save my password securely and auto-login after a reboot
+
 if (Test-PendingReboot){ Invoke-Reboot }
 
 Write-BoxstarterMessage "Disabling Hiberation..."
@@ -11,9 +16,12 @@ Enable-RemoteDesktop
 netsh advfirewall firewall add rule name="Remote Desktop" dir=in localport=3389 protocol=TCP action=allow
 
 # Install .Net Framework 4.5.2
+choco install dotnet4.5 -y
+if (Test-PendingReboot) { Invoke-Reboot }
+
 
 # Install Updates
-Install-WindowsUpdate -AcceptEula
+#Install-WindowsUpdate -AcceptEula
 if (Test-PendingReboot) { Invoke-Reboot }
 
 # Remove the pagefile

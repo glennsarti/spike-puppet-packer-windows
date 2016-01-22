@@ -5,7 +5,7 @@
     "iso_checksum": "0e7c09aab20dec3cd7eab236dab90e78",
     "headless": "false",
     
-    "this_templatedir": "templates/win-2012r2-x86_64",
+    "this_templatedir": "templates/win-2012r2-x86_64/base",
     "this_template": "win-2012r2-x86_64-base"
   },
 
@@ -28,18 +28,20 @@
       "winrm_password": "vagrant",
       "winrm_timeout": "8h",
       
-      "shutdown_command": "A:\\shutdown-packer.bat",
+      "shutdown_command": "A:\\generalize-packer.bat",
+      "shutdown_timeout": "1h",
       "guest_os_type": "windows8srv-64",
       "disk_size": 61440,
       "floppy_files": [
         "{{user `this_templatedir`}}/autounattend.xml",
         
-        "drivers/*",
+        "drivers/winx64/*",
 
         "scripts/bootstrap-base.bat",
         "scripts/start-boxstarter.ps1",
         "scripts/SetupComplete.cmd",
-        "scripts/shutdown-packer.bat",
+        "scripts/generalize-packer.bat",
+        "scripts/generalize-packer.autounattend.xml",
         "{{user `this_templatedir`}}/{{user `this_template`}}.package.ps1"
       ],
       

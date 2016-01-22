@@ -13,6 +13,10 @@ if ($packageFile -eq $null) {
 iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/mwrock/boxstarter/master/BuildScripts/bootstrapper.ps1'))
 Get-Boxstarter -Force
 
+# Cleanup after boxstarter install
+Remove-Item -Path "$($Env:USERPROFILE)\Desktop\Boxstarter Shell.lnk" -Confirm:$false -Force -ErrorAction SilentlyContinue | Out-Null
+Remove-Item -Path "$($Env:APPDATA)\Microsoft\Windows\Start Menu\Boxstarter" -Recurse -Confirm:$false -Force -ErrorAction SilentlyContinue | Out-Null
+
 $secpasswd = ConvertTo-SecureString "vagrant" -AsPlainText -Force
 $cred = New-Object System.Management.Automation.PSCredential ("vagrant", $secpasswd)
 
