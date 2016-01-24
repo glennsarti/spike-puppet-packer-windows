@@ -11,8 +11,24 @@ Write-BoxstarterMessage "Disabling Hiberation..."
 Set-ItemProperty -Path 'Registry::HKLM\SYSTEM\CurrentControlSet\Control\Power' -Name 'HibernateFileSizePercent' -Value 0
 Set-ItemProperty -Path 'Registry::HKLM\SYSTEM\CurrentControlSet\Control\Power' -Name 'HibernateEnabled' -Value 0
 
-& cmd.exe
-Read-Host
+Write-BoxstarterMessage "Installing Puppet Agent..."
+# https://downloads.puppetlabs.com/windows/puppet-agent-x64-latest.msi
+#choco install puppet-agent -installArgs '"PUPPET_AGENT_STARTUP_MODE=manual"' -y
+
+Write-BoxstarterMessage "Extracting Puppet archive..."
+# %ChocolateyInstall%\Tools\7za.exe A:\PUPPET.ZIP to where?
+
+# TODO Download modules from the forge
+
+# TODO Loop Puppet Apply until no resources are changed.  With Invoke-Reboot inbetween
+
+# TODO Uninstall Puppet Agent using choco
+
+# TODO Cleanup puppet log files etc.
+
+Write-Host Staring CMD.exe
+& cmd.exe /c Start cmd.exe
+Read-Host "Press enter"
 
 #if (Test-PendingReboot) { Invoke-Reboot }
 

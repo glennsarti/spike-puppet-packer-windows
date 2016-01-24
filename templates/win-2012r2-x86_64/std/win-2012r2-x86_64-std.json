@@ -26,6 +26,7 @@
 
       "floppy_files": [
         "drivers/winx64/*",
+        "zip/puppet.zip",
 
         "scripts/bootstrap-base.bat",
         "scripts/start-boxstarter.ps1",
