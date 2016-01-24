@@ -17,6 +17,7 @@ Write-BoxstarterMessage "Installing Puppet Agent..."
 
 Write-BoxstarterMessage "Extracting Puppet archive..."
 # %ChocolateyInstall%\Tools\7za.exe A:\PUPPET.ZIP to where?
+# TODO investigate HTTP server in Packer
 
 # TODO Download modules from the forge
 

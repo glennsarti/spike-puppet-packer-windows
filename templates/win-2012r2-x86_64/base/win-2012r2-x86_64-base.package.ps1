@@ -21,6 +21,7 @@ if (Test-PendingReboot) { Invoke-Reboot }
 
 
 # Install Updates
+# TODO Reenable after debugging
 #Install-WindowsUpdate -AcceptEula
 if (Test-PendingReboot) { Invoke-Reboot }
 
