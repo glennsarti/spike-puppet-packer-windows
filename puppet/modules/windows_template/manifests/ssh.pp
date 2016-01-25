@@ -18,6 +18,7 @@ class windows_template::ssh (
   exec { 'download_bitvise':
     command  => $ps_download_command,
     provider => powershell,
+    creates  => $bitvise_download_path
   }
 
   # Create BitVise Config
@@ -28,7 +29,7 @@ class windows_template::ssh (
   }
 
   # Install BitVise
-  package { 'install_bitvise':
+  package { 'Bitvise SSH Server 6.45 (remove only)':
     ensure          => installed,
     source          => $bitvise_download_path,
     install_options => [
@@ -38,6 +39,7 @@ class windows_template::ssh (
       "-activationCode=${$license}",
       "-settings=${bitvise_config_path}",
     ],
+    require => [ Exec['download_bitvise'], File['bitvise_config'] ]
   }
 
   # Start BitVise Service

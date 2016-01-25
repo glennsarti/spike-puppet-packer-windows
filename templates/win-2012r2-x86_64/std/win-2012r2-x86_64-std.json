@@ -33,7 +33,8 @@
         "scripts/SetupComplete.cmd",
         "scripts/generalize-packer.bat",
         "scripts/generalize-packer.autounattend.xml",
-        "{{user `this_templatedir`}}/{{user `this_template`}}.package.ps1"
+        "{{user `this_templatedir`}}/{{user `this_template`}}.package.ps1",
+        "{{user `this_templatedir`}}/*.pp"
       ],
             
       "vmx_data": {

@@ -12,16 +12,99 @@ Set-ItemProperty -Path 'Registry::HKLM\SYSTEM\CurrentControlSet\Control\Power' -
 Set-ItemProperty -Path 'Registry::HKLM\SYSTEM\CurrentControlSet\Control\Power' -Name 'HibernateEnabled' -Value 0
 
 Write-BoxstarterMessage "Installing Puppet Agent..."
-# https://downloads.puppetlabs.com/windows/puppet-agent-x64-latest.msi
-#choco install puppet-agent -installArgs '"PUPPET_AGENT_STARTUP_MODE=manual"' -y
+# TODO Don't use Chocolatey for this?
+#  https://downloads.puppetlabs.com/windows/puppet-agent-x64-latest.msi
+choco install puppet-agent -installArgs '"PUPPET_AGENT_STARTUP_MODE=manual"' -y
 
 Write-BoxstarterMessage "Extracting Puppet archive..."
 # %ChocolateyInstall%\Tools\7za.exe A:\PUPPET.ZIP to where?
 # TODO investigate HTTP server in Packer
 
-# TODO Download modules from the forge
+$TempPuppetModules = "$($ENV:TEMP)\packer-puppet"
+$ModulesPath = ''
+$SrcPuppetZip = "A:\Puppet.ZIP"
+$PuppetPath = 'C:\Program Files\Puppet Labs\Puppet\bin\puppet.bat'
 
-# TODO Loop Puppet Apply until no resources are changed.  With Invoke-Reboot inbetween
+# Cleanup any previous data
+if (Test-Path -Path $TempPuppetModules) { Remove-Item -Path $TempPuppetModules -Recurse -Force -Confirm:$False | Out-Null}
+
+# Extract out the Puppet.ZIP if it exists
+if (Test-Path -Path $SrcPuppetZip) {
+  Write-BoxstarterMessage "Extracting $SrcPuppetZip to $TempPuppetModules"
+  $7zaexe = "$($ENV:ChocolateyInstall)\tools\7za.exe"
+  & $7zaexe x -o"`"$TempPuppetModules`"" -y "$SrcPuppetZip"
+
+  # Find the Modules Path
+  $modPath = "$TempPuppetModules\modules"
+  if (($ModulesPath -eq '') -and (Test-Path -Path $modPath)) {$ModulesPath = $modpath}
+  $modPath = "$TempPuppetModules\puppet\modules"
+  if (($ModulesPath -eq '') -and (Test-Path -Path $modPath)) {$ModulesPath = $modpath}
+  # Throw if no Modules directory
+  if ($ModulesPath -eq '') { Throw "No Modules Directory found in $SrcPuppetZip" }
+  Write-BoxstarterMessage "Found Modules directory $ModulesPath"
+}
+else {
+  Write-BoxstarterMessage "No Puppet Zip file found at $SrcPuppetZip"
+}
+
+# Download and install listed FOrge modules if a relevant forge-modules.txt file is found
+$ForgeMods = "$ModulesPath\forge-modules.txt"
+If ((Test-Path -path $ForgeMods) -and ($ModulesPath -ne '')) {
+  Get-Content -Path $ForgeMods | % {
+    $modulename = $_
+    if ($modulename.IndexOf('#') -gt -1) { $modulename = $modulename.Substring(0,$modulename.IndexOf('#')) }
+    $modulename = $modulename.Trim()
+    if ($modulename -ne '') {
+      Write-BoxstarterMessage "Installing the $modulename module from the Forge..."
+      
+      & $PuppetPath module install "$modulename" --verbose --target-dir $ModulesPath
+      $EC = $LASTEXITCODE      
+      if ($EC -ne 0) {
+        Write-BoxstarterMessage "Installing puppet module $modulename returned exit code $EC"
+        Throw "Installing puppet module $modulename returned exit code $EC"
+      }
+    }
+  }
+}
+else {
+  Write-BoxstarterMessage "No modules were required to be downloaded from the forge $ForgeMods"
+}
+
+# TODO What about custom facts?
+
+# Loop through all Manifest Files in A:\ and process them
+# Keep reapplying until no resources are modified, or MaxAttempts is hit
+Get-ChildItem -Path 'A:\' -Filter '*.pp' | ? { -not $_.PSIsContainer } | % {
+  $MaxAttempts = 20
+  $Attempt = 1 
+  $Manifest = $_
+  $AllDone = $false
+  do {
+    Write-BoxstarterMessage "Applying $($Manifest.Name).  Attempt $Attempt of $MaxAttempts ..."
+    
+    & $PuppetPath apply ($Manifest.Fullname) "--modulepath=$ModulesPath" --verbose --detailed-exitcodes
+    $EC = $LASTEXITCODE
+    switch ($EC) {
+      0 {
+        Write-BoxstarterMessage "$($Manifest.Name) completed and no resources were modified.  Can exit now"
+        $AllDone = $true
+        break
+      }
+      2 {
+        Write-BoxstarterMessage "$($Manifest.Name) completed but some resources were modified.  Will retry"
+        if (Test-PendingReboot) { Invoke-Reboot }
+        break        
+      }
+      default {
+        Write-BoxstarterMessage "$($Manifest.Name) failed with exit code $EC"
+        throw "Puppet manifest $($Manifest.Name) failed with exit code $EC"
+      }
+    }
+    $Attempt++
+  } while ( -not $AllDone -and ($Attempt -lt $MaxAttempts) )
+  if (-not $AllDone) { throw "Failed to converge $($Manifest.Name).  Max attempts exceeded"}
+}
+
 
 # TODO Uninstall Puppet Agent using choco
 
@@ -31,7 +114,7 @@ Write-Host Staring CMD.exe
 & cmd.exe /c Start cmd.exe
 Read-Host "Press enter"
 
-#if (Test-PendingReboot) { Invoke-Reboot }
+if (Test-PendingReboot) { Invoke-Reboot }
 
 # Remove the pagefile
 Write-BoxstarterMessage "Removing page file.  Recreates on next boot"
