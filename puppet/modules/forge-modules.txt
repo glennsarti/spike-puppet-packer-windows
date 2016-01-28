@@ -4,3 +4,4 @@
 # TODO Support version pinning and custom forge URLs
 
 puppetlabs-powershell
+puppetlabs-registry

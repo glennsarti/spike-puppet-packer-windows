@@ -121,6 +121,10 @@ Write-BoxstarterMessage "Removing page file.  Recreates on next boot"
 $pageFileMemoryKey = "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management"
 Set-ItemProperty -Path $pageFileMemoryKey -Name PagingFiles -Value ""
 
+# TODO Set Local Administrators password!
+
+# TODO Apparently I need to setup autologon for Administrator.  I don't like this.  Need to figure out why
+
 $enableArgs=@{Force=$true}
 try {
  $command=Get-Command Enable-PSRemoting
