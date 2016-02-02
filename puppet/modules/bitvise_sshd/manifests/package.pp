@@ -1,15 +1,15 @@
-class windows_template::ssh (
+class bitvise_sshd::package (
   $download_base_url = 'http://int-resources.ops.puppetlabs.net/QA_resources/bitvise',
   $temp_path         = 'C:\Windows\Temp',
   $bitvise_installer = 'BvSshServer-Inst.exe',
 )
 {
   # Init
-  $bitvise_download_url  = "${download_base_url}/BvSshServer-Inst.exe"
-  $bitvise_download_path = "${temp_path}\\BvSshServer-Inst.exe"
+  $bitvise_download_url  = "${download_base_url}/${bitvise_installer}"
+  $bitvise_download_path = "${temp_path}\\${bitvise_installer}"
   $ps_download_command   = "(New-Object System.Net.WebClient).DownloadFile(\"${bitvise_download_url}\", \"${bitvise_download_path}\")"
 
-  $license        = file('windows_template/bitvise_license.txt')
+  $license        = file('bitvise_sshd/bitvise_license.txt')
 
   $bitvise_config_name = 'windows_vmpooler_bitvise_settings.wst'
   $bitvise_config_path = "${temp_path}\\${bitvise_config_name}"
@@ -25,7 +25,7 @@ class windows_template::ssh (
   file { 'bitvise_config':
     ensure => file,
     path   => $bitvise_config_path,
-    source => "puppet:///modules/windows_template/${$bitvise_config_name}",
+    source => "puppet:///modules/bitvise_sshd/${$bitvise_config_name}",
   }
 
   # Install BitVise

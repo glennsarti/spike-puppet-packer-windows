@@ -66,9 +66,13 @@ class windows_template::local_group_policies ()
         type  => 'dword'     
     }
     
+    # TODO Change the Desktop Settings to "Classic" and Enable Best Performance <-- Use Boxstarter?
+
+    exec { 'DisableScreenSaver':
+        provider => powershell,
+        command  => '& REG ADD "HKCU\Software\Policies\Microsoft\Windows\Control Panel\Desktop" /v ScreenSaveActive /t REG_SZ /d 0',
+        unless   => '$val = $null; try { $val = ((Get-ItemProperty "Registry::HKEY_CURRENT_USER\Software\Policies\Microsoft\Windows\Control Panel\Desktop").ScreenSaveActive) } catch { $val = $null }; if ( ($val -eq 0) -and ($val -ne $null) ) { exit 0 } else { exit 1 }'    
+    }
     
-    # TODO Up to Change the Desktop Settings to "Classic" and Enable Best Performance
-   
-    
-    
+    # TODO Up to Update Start Menu
 }
