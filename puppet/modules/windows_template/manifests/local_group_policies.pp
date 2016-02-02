@@ -74,5 +74,21 @@ class windows_template::local_group_policies ()
         unless   => '$val = $null; try { $val = ((Get-ItemProperty "Registry::HKEY_CURRENT_USER\Software\Policies\Microsoft\Windows\Control Panel\Desktop").ScreenSaveActive) } catch { $val = $null }; if ( ($val -eq 0) -and ($val -ne $null) ) { exit 0 } else { exit 1 }'    
     }
     
-    # TODO Up to Update Start Menu
+    # TODO Update Start Menu 2008 only
+    
+    # TODO Modify Notification Icon Tray
+    
+    registry::value { 'DisableHibernationOnBattery':
+        key   => 'HKLM\Software\Policies\Microsoft\Power\PowerSettings\94ac6d29-73ce-41a6-809f-6363ba21b47e',
+        value => 'DCSettingIndex',
+        data  => 0,
+        type  => 'dword'     
+    }
+    registry::value { 'DisableHibernationPluggedIn':
+        key   => 'HKLM\Software\Policies\Microsoft\Power\PowerSettings\94ac6d29-73ce-41a6-809f-6363ba21b47e',
+        value => 'ACSettingIndex',
+        data  => 0,
+        type  => 'dword'     
+    }
+    
 }
