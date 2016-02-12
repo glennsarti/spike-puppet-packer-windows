@@ -71,7 +71,7 @@ function Set-PolicySetting($objPolicy)
 
 function Open-PolicyFile([string]$policyFilePath = '', [bool]$createIfNotExist = $true)
 {
-  if ($policyFile -eq '') { $policyFilePath = "$($env:systemroot)\system32\GroupPolicy\$PolicyType\registry.pol" }
+  if ($policyFilePath -eq '') { $policyFilePath = "$($env:systemroot)\system32\GroupPolicy\$PolicyType\registry.pol" }
 
   try
   {
