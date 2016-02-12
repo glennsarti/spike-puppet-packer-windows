@@ -14,11 +14,11 @@ $PolicyValueType = '<%= @type %>'
 
 $vp = $VerbosePreference
 $VerbosePreference = 'SilentlyContinue'
-# To import on PowerShell v3, you can use this command: 
+# To import on PowerShell v3, you can use this command:
 Add-Type -Language CSharp -TypeDefinition $PolFileEditorCS -ErrorAction Stop
-# To make it work on PowerShell v2, use this command instead: 
+# To make it work on PowerShell v2, use this command instead:
 # Add-Type -Language CSharpVersion3 -TypeDefinition $PolFileEditorCS -ErrorAction Stop
-$VerbosePreference = $vp 
+$VerbosePreference = $vp
 
 function Compare-PolicyValueIsSameAs($objPolicyEntry,$value)
 {
@@ -49,33 +49,50 @@ function Set-PolicySetting($objPolicy)
   }
 
   # Save the policy file
+  Write-Verbose "Saving the registry pol file"
   $objPolicy.SaveFile() | Out-Null
 
   # Increment the gpt.ini version number
-  $gptContents = Get-Content $env:systemroot\system32\GroupPolicy\gpt.ini
+  Write-Verbose "Incrementing the version count"
+  $gptIniPath = "$($env:systemroot)\system32\GroupPolicy\gpt.ini"
+  if (Test-Path -Path $gptIniPath) {
+    $gptContents = Get-Content $gptIniPath
+  } else {
+    $gptContents = @('[General]','Version=0')
+  }
   $gptContents |
   ForEach-Object {
     if ($_ -match "Version=(\d+)$") {
       Write-Output "Version=$( ([int]$matches[1]) + 1 )"
     } else { Write-Output $_ }
-  } | Set-Content $env:systemroot\system32\GroupPolicy\gpt.ini | Out-Null
+  } | Set-Content $gptIniPath | Out-Null
   return $true
 }
 
-function Open-PolicyFile()
+function Open-PolicyFile([string]$policyFilePath = '', [bool]$createIfNotExist = $true)
 {
-  # TODO - Create a blank file if non exists
-  $objPolicy = $null
-  # Open the policy file
-  try 
-  { 
-    $objPolicy = New-Object TJX.PolFileEditor.PolFile 
-    $objPolicy.LoadFile("$($env:systemroot)\system32\GroupPolicy\$PolicyType\registry.pol")     
-  } 
-  catch 
-  { 
+  if ($policyFile -eq '') { $policyFilePath = "$($env:systemroot)\system32\GroupPolicy\$PolicyType\registry.pol" }
+
+  try
+  {
+    if ( -not (Test-Path -Path $policyFilePath) -and $createIfNotExist ) {
+      Write-Verbose "Creating the registry pol file at $policyFilePath"
+      $parentPath = Split-Path -Path $policyFilePath -Parent
+      if (-not (Test-Path -Path $parentPath)) { New-Item -Path $parentPath -ItemType Directory | Out-Null }
+
+      $tempPolFile = New-Object TJX.PolFileEditor.PolFile
+      $tempPolFile.SaveFile($policyFilePath)
+    }
+
+    $objPolicy = New-Object TJX.PolFileEditor.PolFile
+    $objPolicy.LoadFile($policyFilePath)
+    Write-Verbose "Opened the registry pol file at $policyFilePath"
+  }
+  catch
+  {
     $objPolicy = $null
+    Write-Verbose "Error while opening the registry pol file at $policyFilePath"
+    Write-Verbose $_
   }
   Write-Output $objPolicy
 }
- 
