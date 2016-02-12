@@ -2,7 +2,7 @@
 # local_gpo.ps1 - newline is REQUIRED above
 $PolicyType = '<%= @policy_type %>'  # Machine or User
 $PolicyKeyName = '<%= @key %>'
-$PolicyValueName = '<%= @valuename %>'
+$PolicyValueName = '<%= @value %>'
 $PolicyValue = '<%= @data %>'
 $PolicyValueType = '<%= @type %>'
 

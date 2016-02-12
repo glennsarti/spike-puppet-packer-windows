@@ -2,40 +2,49 @@ class windows_template::local_group_policies ()
 {
     # Search Group Policies and find their registry information
     # http://gpsearch.azurewebsites.net/
-    
-    registry::value { 'DisableServerManagerAtLogon2012':
-        key   => 'HKLM\Software\Policies\Microsoft\Windows\Server\ServerManager',
-        value => 'DoNotOpenAtLogon',
-        data  => 1,
-        type  => 'dword'     
+
+    windows_group_policy::gpupdate { 'GPUpdate':
     }
-    registry::value { 'DisableServerManagerAtLogon2008':
-        key   => 'HKLM\Software\Policies\Microsoft\Windows\Server\InitialConfigurationTasks',
+    
+    windows_group_policy::local::machine { 'DisableServerManagerAtLogon2012':
+        key   => 'Software\Policies\Microsoft\Windows\Server\ServerManager',
         value => 'DoNotOpenAtLogon',
         data  => 1,
-        type  => 'dword'     
+        type  => 'REG_DWORD',
+        notify => Windows_group_policy::Gpupdate['GPUpdate'],
+    }
+    windows_group_policy::local::machine { 'DisableServerManagerAtLogon2008':
+        key   => 'Software\Policies\Microsoft\Windows\Server\InitialConfigurationTasks',
+        value => 'DoNotOpenAtLogon',
+        data  => 1,
+        type  => 'REG_DWORD',
+        notify => Windows_group_policy::Gpupdate['GPUpdate'],
     }
 
-    registry::value { 'DisableShutdownTracker1':
-        key   => 'HKLM\Software\Policies\Microsoft\Windows NT\Reliability',
+    windows_group_policy::local::machine { 'DisableShutdownTracker1':
+        key   => 'Software\Policies\Microsoft\Windows NT\Reliability',
         value => 'ShutdownReasonOn',
         data  => 0,
-        type  => 'dword'     
+        type  => 'REG_DWORD',
+        notify => Windows_group_policy::Gpupdate['GPUpdate'],
     }
-    registry::value { 'DisableShutdownTracker2':
-        key   => 'HKLM\Software\Policies\Microsoft\Windows NT\Reliability',
+    windows_group_policy::local::machine { 'DisableShutdownTracker2':
+        key   => 'Software\Policies\Microsoft\Windows NT\Reliability',
         value => 'ShutdownReasonUI',
         data  => 0,
-        type  => 'dword'     
+        type  => 'REG_DWORD',
+        notify => Windows_group_policy::Gpupdate['GPUpdate'],
     }
 
-    registry::value { 'DisableWER':
-        key   => 'HKLM\Software\Policies\Microsoft\Windows Error Reporting',
+    windows_group_policy::local::machine { 'DisableWER':
+        key   => 'Software\Policies\Microsoft\Windows Error Reporting',
         value => 'Disabled',
         data  => 1,
-        type  => 'dword'     
+        type  => 'REG_DWORD',
+        notify => Windows_group_policy::Gpupdate['GPUpdate'],
     }
 
+    # Windows Error Reporting
     registry::value { 'UserModeCrashDumpFolder':
         key   => 'HKLM\SOFTWARE\Microsoft\Windows\Windows Error Reporting\LocalDumps',
         value => 'DumpFolder',
@@ -59,11 +68,12 @@ class windows_template::local_group_policies ()
     
     # TODO Apply High Performance Power Management
 
-    registry::value { 'DisableSystemRestore':
-        key   => 'HKLM\SOFTWARE\Policies\Microsoft\Windows NT\SystemRestore',
+    windows_group_policy::local::machine { 'DisableSystemRestore':
+        key   => 'SOFTWARE\Policies\Microsoft\Windows NT\SystemRestore',
         value => 'DisableSR',
         data  => 1,
-        type  => 'dword'     
+        type  => 'REG_DWORD',
+        notify => Windows_group_policy::Gpupdate['GPUpdate'],
     }
     
     # TODO Change the Desktop Settings to "Classic" and Enable Best Performance <-- Use Boxstarter?
@@ -78,17 +88,19 @@ class windows_template::local_group_policies ()
     
     # TODO Modify Notification Icon Tray
     
-    registry::value { 'DisableHibernationOnBattery':
-        key   => 'HKLM\Software\Policies\Microsoft\Power\PowerSettings\94ac6d29-73ce-41a6-809f-6363ba21b47e',
+    windows_group_policy::local::machine { 'DisableHibernationOnBattery':
+        key   => 'Software\Policies\Microsoft\Power\PowerSettings\94ac6d29-73ce-41a6-809f-6363ba21b47e',
         value => 'DCSettingIndex',
         data  => 0,
-        type  => 'dword'     
+        type  => 'REG_DWORD',
+        notify => Windows_group_policy::Gpupdate['GPUpdate'],
     }
-    registry::value { 'DisableHibernationPluggedIn':
-        key   => 'HKLM\Software\Policies\Microsoft\Power\PowerSettings\94ac6d29-73ce-41a6-809f-6363ba21b47e',
+    windows_group_policy::local::machine { 'DisableHibernationPluggedIn':
+        key   => 'Software\Policies\Microsoft\Power\PowerSettings\94ac6d29-73ce-41a6-809f-6363ba21b47e',
         value => 'ACSettingIndex',
         data  => 0,
-        type  => 'dword'     
+        type  => 'REG_DWORD',
+        notify => Windows_group_policy::Gpupdate['GPUpdate'],
     }
     
 }

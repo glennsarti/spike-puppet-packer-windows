@@ -1,8 +1,8 @@
 define windows_group_policy::local::machine(
   $ensure    = 'present',
   $key       = '',
-  $valuename = '',
-  $type = 'REG_SZ',
+  $value     = '',
+  $type      = 'REG_SZ',
   $data      = '',
   $logoutput = false,
 )
@@ -24,15 +24,6 @@ define windows_group_policy::local::machine(
                          'windows_group_policy/command-unless.ps1'),
       provider => powershell,
       logoutput => $logoutput,
-    }
-    
-    
-    file { "C:/dev/spike-puppet-packer-windows/puppet/test.ps1":
-      ensure => present,
-      content => template('windows_group_policy/script_header.ps1',
-                          'windows_group_policy/PolFileEditor.ps1',
-                          'windows_group_policy/local_gpo.ps1',
-                          'windows_group_policy/command-unless.ps1'),
     }
   } else {
     # Do stuff to remove it

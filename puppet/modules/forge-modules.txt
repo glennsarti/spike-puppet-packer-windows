@@ -5,3 +5,4 @@
 
 puppetlabs-powershell
 puppetlabs-registry
+puppetlabs-stdlib
