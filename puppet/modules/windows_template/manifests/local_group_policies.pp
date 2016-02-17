@@ -78,10 +78,12 @@ class windows_template::local_group_policies ()
     
     # TODO Change the Desktop Settings to "Classic" and Enable Best Performance <-- Use Boxstarter?
 
-    exec { 'DisableScreenSaver':
-        provider => powershell,
-        command  => '& REG ADD "HKCU\Software\Policies\Microsoft\Windows\Control Panel\Desktop" /v ScreenSaveActive /t REG_SZ /d 0',
-        unless   => '$val = $null; try { $val = ((Get-ItemProperty "Registry::HKEY_CURRENT_USER\Software\Policies\Microsoft\Windows\Control Panel\Desktop").ScreenSaveActive) } catch { $val = $null }; if ( ($val -eq 0) -and ($val -ne $null) ) { exit 0 } else { exit 1 }'    
+    windows_group_policy::local::user { 'DisableScreenSaver':
+        key   => 'SOFTWARE\Policies\Microsoft\Windows\Control Panel\Desktop',
+        value => 'ScreenSaveActive',
+        data  => 0,
+        type  => 'REG_SZ',
+        notify => Windows_group_policy::Gpupdate['GPUpdate'],
     }
     
     # TODO Update Start Menu 2008 only
@@ -103,4 +105,20 @@ class windows_template::local_group_policies ()
         notify => Windows_group_policy::Gpupdate['GPUpdate'],
     }
     
+    # Disable IE ESC for admins
+    registry::value { 'DisableIEESCForAdmins':
+        key   => 'HKLM\SOFTWARE\Microsoft\Active Setup\Installed Components\{A509B1A7-37EF-4b3f-8CFC-4F3A74704073}',
+        value => 'IsInstalled',
+        data  => 0,
+        type  => 'dword'     
+    }
+    # Disable IE ESC for non-admins
+    registry::value { 'DisableIEESCForNonAdmins':
+        key   => 'HKLM\SOFTWARE\Microsoft\Active Setup\Installed Components\{A509B1A8-37EF-4b3f-8CFC-4F3A74704073}',
+        value => 'IsInstalled',
+        data  => 0,
+        type  => 'dword'     
+    }
+    
+    # TODO up to Set IE Home Page to "Blank"
 }

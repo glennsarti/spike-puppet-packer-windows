@@ -72,6 +72,9 @@ else {
 
 # TODO What about custom facts?
 
+Write-BoxStarterMessage "Loading Default User hive to HKLM\DEFUSER..."
+& reg load HKLM\DEFUSER C:\Users\Default\NTUSER.DAT
+
 # Loop through all Manifest Files in A:\ and process them
 # Keep reapplying until no resources are modified, or MaxAttempts is hit
 Get-ChildItem -Path 'A:\' -Filter '*.pp' | ? { -not $_.PSIsContainer } | % {
@@ -105,6 +108,8 @@ Get-ChildItem -Path 'A:\' -Filter '*.pp' | ? { -not $_.PSIsContainer } | % {
   if (-not $AllDone) { throw "Failed to converge $($Manifest.Name).  Max attempts exceeded"}
 }
 
+Write-BoxStarterMessage "Unloading Default User hive from HKLM\DEFUSER..."
+& reg unload HKLM\DEFUSER
 
 # TODO Uninstall Puppet Agent using choco
 
