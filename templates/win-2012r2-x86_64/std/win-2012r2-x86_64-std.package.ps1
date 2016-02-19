@@ -111,9 +111,10 @@ Get-ChildItem -Path 'A:\' -Filter '*.pp' | ? { -not $_.PSIsContainer } | % {
 Write-BoxStarterMessage "Unloading Default User hive from HKLM\DEFUSER..."
 & reg unload HKLM\DEFUSER
 
-# TODO Uninstall Puppet Agent using choco
-
-# TODO Cleanup puppet log files etc.
+Write-BoxstarterMessage "Uninstalling Puppet Agent..."
+# TODO Don't use Chocolatey for this?
+choco uninstall puppet-agent -uninstallargs '"REBOOT=ReallySuppress"' -y
+& cmd.exe /C RD C:\ProgramData\PuppetLabs /s /q
 
 Write-Host Staring CMD.exe
 & cmd.exe /c Start cmd.exe
@@ -147,3 +148,6 @@ winrm set winrm/config/client/auth '@{Basic="true"}'
 winrm set winrm/config/service/auth '@{Basic="true"}'
 winrm set winrm/config/service '@{AllowUnencrypted="true"}'
 Write-BoxstarterMessage "WinRM setup complete"
+
+# TODO Remove Boxstarter?
+# TODO Remove Chocolatey?
